@@ -4,15 +4,15 @@ author: "Erika Gavenus"
 date: "6/11/2021"
 output: html_document
 ---
-This workshop will introduce using ggplot2 to create visuals in R. It will use datasets from [...] and available from the [...]. While some familiarity with R can be useful in understanding what is happening within the ggplot2 package, this workshop will focus on introducing the functionality of ggplot2 using pre-cleaned datasets. 
+This workshop will introduce using ggplot2 to create visuals in R. It will use datasets from the State of Alaskan Salmon and People project and available from the Knowledge Network for Biocomplexity. While some familiarity with R can be useful in understanding what is happening within the ggplot2 package, this workshop will focus on introducing the functionality of ggplot2 using pre-cleaned datasets. 
 
-Finally, participants who do not already have R and R studio available on their computer can find directions to downloading it here: ... . If you want to follow along, it will be good to have R downloaded before the session.
+Finally, participants who do not already have R and R studio available on their computer can find directions to downloading it here: https://cran.rstudio.com/. If you want to follow along, it will be good to have R downloaded before the session.
 
 ## Packages and Functions
 
 In R, a lot of the functions are within packages that others have developed. For this workshop we will be using dplyr (Wickham et al, 2020), ggplot2 (Wickham H, 2016), and tidyr (Wickham and Henry, 2020). Later on we will add other packages to support more customizable visuals.
 
-Since these packages are already installed on my computer, I can use the library() function to load the required package. If you do not yet have these packages you can use install.packages(c("dplyr", "ggplot2", "tidyr")) to access them.
+Since these packages are already installed on my computer, I can use the *library()* function to load the required package. If you do not yet have these packages you can use *install.packages(c("dplyr", "ggplot2", "tidyr"))* to access them.
 
 ```{r libraries, warnings=FALSE, message=FALSE}
 library (dplyr)
@@ -21,7 +21,7 @@ library (tidyr)
 ```
 
 ## Data and information sources
-The data I have shared comes from the US Census, combined with fishing license data and subsistence catch data from the Alaska Department of Fish and Game. The dataset was consolidated and formatted by researchers, lead by Jeanette Clark, at the National Center for Ecological Analysis and Synthesis as part of the State of Alaskan Salmon and People project in collaboration with Drs. Courtney Carothers, Rachel Donkersloot, and Jessica Black (Gwich'in). The original datasets are all available through The Knowledge Network for Biocomplexity (https://knb.ecoinformatics.org/).
+The data we will be exploring come from the US Census, combined with fishing license data and subsistence catch data from the Alaska Department of Fish and Game. The dataset was consolidated and formatted by researchers, lead by Jeanette Clark, at the National Center for Ecological Analysis and Synthesis as part of the State of Alaskan Salmon and People project in collaboration with Drs. Courtney Carothers, Rachel Donkersloot, and Jessica Black (Gwich'in). The original datasets are all available through The Knowledge Network for Biocomplexity (https://knb.ecoinformatics.org/).
 
 ```{r census data, warning=FALSE, message=FALSE}
 wellbeing.ak <- read.csv("https://cn.dataone.org/cn/v2/resolve/urn:uuid:e031447c-7e00-4ce1-a0d9-d61bdef899b9", stringsAsFactors = F)

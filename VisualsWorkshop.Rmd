@@ -1,0 +1,413 @@
+---
+title: "VisualsWorkshop"
+author: "Erika Gavenus"
+date: "6/11/2021"
+output: html_document
+---
+This workshop will introduce using ggplot2 to create visuals in R. It will use datasets from [...] and available from the [...]. While some familiarity with R can be useful in understanding what is happening within the ggplot2 package, this workshop will focus on introducing the functionality of ggplot2 using pre-cleaned datasets. 
+
+Finally, participants who do not already have R and R studio available on their computer can find directions to downloading it here: ... . If you want to follow along, it will be good to have R downloaded before the session.
+
+## Packages and Functions
+
+In R, a lot of the functions are within packages that others have developed. For this workshop we will be using dplyr (Wickham et al, 2020), ggplot2 (Wickham H, 2016), and tidyr (Wickham and Henry, 2020). Later on we will add other packages to support more customizable visuals.
+
+Since these packages are already installed on my computer, I can use the library() function to load the required package. If you do not yet have these packages you can use install.packages(c("dplyr", "ggplot2", "tidyr")) to access them.
+
+```{r libraries, warnings=FALSE, message=FALSE}
+library (dplyr)
+library (ggplot2)
+library (tidyr)
+```
+
+## Data and information sources
+The data I have shared comes from the US Census, combined with fishing license data and subsistence catch data from the Alaska Department of Fish and Game. The dataset was consolidated and formatted by researchers, lead by Jeanette Clark, at the National Center for Ecological Analysis and Synthesis as part of the State of Alaskan Salmon and People project in collaboration with Drs. Courtney Carothers, Rachel Donkersloot, and Jessica Black (Gwich'in). The original datasets are all available through The Knowledge Network for Biocomplexity (https://knb.ecoinformatics.org/).
+
+```{r census data, warning=FALSE, message=FALSE}
+wellbeing.ak <- read.csv("https://cn.dataone.org/cn/v2/resolve/urn:uuid:e031447c-7e00-4ce1-a0d9-d61bdef899b9", stringsAsFactors = F)
+
+colnames(wellbeing.ak)
+```
+
+There are 18 variables included in the dataframe defined as:
+
+**1. region**= the designated region from the SASAP project; categorical, string
+
+**2. city**= the city, town, or village name; categorical, string
+
+**3. lat**= approximate latitude; continuous, decimal degrees
+
+**4. lng**= approximate longitude; continuous, decimal degrees
+
+**5. total_2016**= total population at the city scale; continuous, integer
+
+**6. median_income**= calculated median income from US Census 2016; continuous, integer
+
+**7. percent_pop_aian**= percent of the city population who identified as American Indian or Alaska Native on the 2016 US Census; continuous, percent
+
+**8. percent_pop_change**= change in population from 1980 to 2016 US Census; continuous, percent
+
+**9. percent_pop_poverty**= percent of the city population who are living below the federally defined poverty line according to the 2016 US Census; continuous, percent
+
+**10. comm_pcnt_initial**= percent of initial commericial salmon permits remaining in community; continuous, percent
+
+**11. comm_age_change_1980_2016**= change in the median age of commerical salmon permit holders from 1980-2016; continous, integer
+
+**12. subs_year**= year of subsistence survey; continuous, integer
+
+**13. subs_percent_households_harvesting**= percent of community households who harvested subsistence salmon in survey year; continuous, percent
+
+**14. subs_percent_households_using**= percent of community households who used subsistence salmon in survey year; continuous, percent
+
+**15. subs_lbs_per_capita_harvest**= weight (lbs) of subsistence salmon harvested per capita in survey year; continuous, integer
+
+**16.pu_lbs_harvested**= weight (lbs) of personal use salmon harvested in 2016; continuous, integer
+
+**17. pu_lbs_per_capita**= weight (lbs) of personal use salmon harvested per capita in 2016; continuous, integer
+
+**18. sport_license_per_capita**= number of sport fishing licenses sold per capita in 2016; continuous, integer
+
+## Using ggplot2 to create visuals
+Now that we have the dataframe loaded and are familiar with what all is included, we can start to explore using ggplot2 to create plots and visuals. As a basic introduction, ggplot2 uses a specific grammar of graphics (thus the gg) that relies on layers, which is similar to the way applications like Photoshop and ArcGIS operate. The layers in ggplot2 are ordered as: **data, mapping, geom, stat, position, scale, coord,** and **facet** and we will walk through adding and altering each layer using the above data.
+
+### Data & Mapping
+The definition of the **data** and which variables **map** onto which aesthetics is required by ggplot2, you cannot proceed without it. Thankfully, it is fairly straightforward after you have decided which variables you are interested in. 
+
+From the among the variables above, what is a relationship that we would be interested in exploring through a plot?
+
+
+```{r datamapping, message=FALSE, warning=FALSE}
+# We will rename those as the x and y variable. You can use the variable name directly in ggplot2, but this makes it easier to quickly change the variables you are exploring.
+
+plotting.data<-rename(wellbeing.ak, var.x=region)
+plotting.data<-rename(plotting.data, var.y=subs_percent_households_using)
+
+plot1<-ggplot(plotting.data, aes(x=var.x, y=var.y))
+
+plot1
+```
+
+At this point, we can see that we have the variables on the correct axises and the scales have been set, but there are no data being displayed. We can also see the information that ggplot is holding about plot1 by entering *View()*. 
+
+The next step is to decide how we want to visualise the data and let ggplot know so that it can project the data onto the coordinates we just set up.
+
+### Geom
+We accomplish this through the **geom** layer. There are many geoms available for using with ggplot2, each comes with its own preset functionalities and it takes some consideration of the type of data you are working with: is it continuous? categorical? and the relationships you are interested in exploring. A handy spot to gain familiarity with the range of geoms available is: https://ggplot2.tidyverse.org/reference/#section-layer-geoms.
+
+With these options and the variables that we chose, what geom would you be interested in trying?
+
+```{r geom, warning=FALSE, message=FALSE}
+plot2<- plot1 +
+  geom_point()
+plot2
+
+plot3<- plot1 +
+  geom_boxplot()
+plot3
+
+plot4<- plot1 +
+  geom_violin()
+plot4
+
+```
+Those give you an idea of how the geoms are used to project the data we are exploring as a visual. 
+
+But what if we want to look at and start to compare the sum or average at the region level?
+
+### Stat
+That is where **stat** comes in. Each geom has a default **stat**, in the geom_point example *identity* was used. That means that the plot will use the value in the cell to determine where to place the point or *f(x)=x*. 
+
+If we want to look at the average value for y for each x, we can set the **stat** to *summary* and specify that we want the plot to display the mean y value for each x.
+
+```{r stat, warning=FALSE, message=FALSE}
+plot7<- plot1 +
+  geom_point(stat="summary", fun.y="mean")
+plot7
+
+# we can also use different geoms now that might have made less sense when visualising each community's data
+
+plot8<- plot1 +
+  geom_bar(stat="summary", fun.y="mean")
+plot8
+
+# finally we can combine these together if we want to have both the summary and individual community data
+
+plot9<- plot8 +
+  geom_point()
+plot9
+```
+
+### Position
+In this plot we have some points that are overlapping, because they are all aligned to the center of the x-variable. Adjusting the **position** can help us see these better. Defining the **position** is also useful for creating stacked or grouped bar plots. 
+
+```{r position, warning=FALSE, message=FALSE}
+# We can use position_jitter to add random "noise" to the x-value to reduce the overlap
+
+plot10<- plot8 +
+  geom_point(position=position_jitter(width=0.1))
+plot10
+
+plot11<- plot8 +
+  geom_point(position=position_jitter(width=0.4))
+plot11
+
+# position_stack is useful if you want to stack bar plots
+
+plot12<- plot1 +
+  geom_col(position=position_stack())
+plot12
+
+# Which could be informative, but we might need to add some colour to get a better sense of what is happening.
+
+plot12b<- plot1 +
+  geom_col(position=position_stack(), colour="#769fad", fill="white")
+plot12b
+
+```
+
+We can also use *fill* and *colour* to set specific colours that we prefer to use for all the data. Note in this case *fill* and *colour* are not inside the *aes()* because they are not relying on the data.
+
+```{r set.colour, warning=FALSE, message=FALSE}
+plot17<- plot1 +
+  geom_bar(fill="lightblue", stat="summary", fun.y="mean")
+plot17
+
+plot17<- plot1 +
+  geom_bar(fill="#769fad", stat="summary", fun.y="mean")
+plot17
+```
+
+What if we want the colours to be reflective of the data, for example darker for higher percentages?
+
+### Scale
+We can use **scale** to define the colours and how they should be assigned based on the data. For categorical data, discrete colour scales are recommended, for continous data gradiant colour scales are recommended. Here *colour* and *fill* will need to be within *aes()*
+
+```{r scale, warning=FALSE, message=FALSE}
+plot12c<- plot1 +
+  geom_col(position=position_stack(), aes(fill=var.y))+
+  scale_colour_continuous()
+plot12c
+
+# We can also return to the dot plot to explore the addition of scaling
+
+plot13<- plot8 +
+  geom_point(aes(colour=var.x), position=position_jitter(width=0.2)) +
+  scale_colour_discrete()
+plot13
+
+# We can also use scaling to add information that the positioning of the points does not already convey
+
+plot14<-plot8 +
+  geom_point(aes(colour=lat), position=position_jitter(width=0.2)) +
+  scale_colour_continuous()
+plot14
+```
+
+Scaling can also be used to assign different shapes, line type, size, and transparency. 
+
+For colouring, some geoms, like geom_bar, allow *fill* and *colour* to be defined.
+
+```{r scale.fill, warning=FALSE, message=FALSE}
+plot15<- plot1 +
+  geom_bar(aes(colour=var.x), stat="summary", fun.y="mean") +
+  scale_colour_discrete()
+plot15
+
+plot16<- plot1 +
+  geom_bar(aes(fill=var.x), stat="summary", fun.y="mean") +
+  scale_colour_discrete()
+plot16
+```
+
+
+
+### Coord
+The *coordinate system* in all these examples has been defaulting to a Cartesian coordinate system, which is the most common for two dimensions. This will usually be sufficient. However, if you are interested in creating pie charts or spider-plots, you will need to change the coordinate system. 
+
+```{r coord, warning=FALSE, message=FALSE}
+plot18<- plot1 +
+  geom_bar(aes(fill=var.x), stat="summary", fun.y="mean") +
+  coord_polar() +
+  scale_colour_discrete() 
+plot18
+```
+
+There are alot of opinions about what makes a *good plot*, and they seem to be especially strong around changing the coordinate system. While ggplot2 helps making *good plots* easier, you can certainly still make *bad plots*. 
+
+Here is a helpful spot to check for more discussion on what might be considered as *good* and *bad*: https://www.data-to-viz.com/caveats.html.
+
+### Facet
+
+The final layer is to define the **facet**, which actually works by redifining the coordinate system, but we don't really have to worry about that. **Facet** allows us to create multiple, smaller plots so we can explore if relationships are common across other variables.
+
+```{r facet, message=FALSE, warning=FALSE}
+# We will change the x axis to median household income (USD) so we can look at the relationships across the regions, to do this we have to go all the way back to the data and mapping layer using ggplot()
+
+plot19<- ggplot(plotting.data, aes(x=median_income, y=var.y)) +
+  geom_point(position=position_jitter(width=0.2))+
+  facet_wrap(vars(var.x))
+plot19
+
+plot20<- ggplot(plotting.data, aes(x=median_income, y=var.y)) +
+  geom_point(aes(colour=lat), position=position_jitter(width=0.2)) +
+  scale_colour_continuous()+
+  facet_wrap(vars(var.x))
+plot20
+```
+
+
+You can see how we can easily start to explore a lot of information on the same plot. And this is really what I have found to be the strength of ggplot2. Moving from any of the plots above to something you might want to include in a presentation, report, or article takes a bit more fiddling. The good news is that for a lot of what you might want to do, someone has already done the fiddling for you (e.g. themes). And if they have not, or you want to make further changes you can do that once and then save it as a function that you can easily call for future plots and even other projects.
+
+## Making thing pretty --but also readable
+If you are like me, this is where you can end up spending a lot of time. The best way to save yourself some time is to use **themes** that others have already created. These are easy to use and let you quickly set a lot of the formatting and colours.
+
+### Themes
+```{r themes, warning=FALSE, message=FALSE}
+plot21<- plot20 +
+  theme_bw()
+plot21
+
+plot22<- plot20 +
+  theme_classic()
+plot22
+
+plot23<- plot20 +
+  theme_minimal()
+plot23
+```
+To modify components of a theme use **theme()**.
+
+```{r theme.mod, warning=FALSE, message=FALSE}
+# Here we can move the legend to the bottom
+plot24<- plot23 +
+  theme(legend.position="bottom")
+plot24
+```
+
+### Labels
+In these examples, labels are a spot where we can make a lot of improvements. We have x and y variables that are not described very well, and region names that are long and running over. Most of these can be adjusted by adding a *labs()* layer. 
+
+```{r labs, warning=FALSE, message=FALSE}
+# If we go back to the example with the legend on the side
+plot25<-plot23 + 
+  labs(x="Median Income (USD)", y="Percent of Households Using\n Subsistence Salmon", colour="Latitude")
+plot25
+
+# note that we can use \n to create a line break
+
+# We can also use labs() to insert a Title, Subtitle, and Caption
+plot26<-plot25 +
+  labs(title="Percent of Households Using Subsistence Salmon by Median Income", subtitle="At the community level, across SASAP regions", caption="Use of subsistence salmon from ADF&G surveys.\n Median income from US Census, 2016.")
+plot26
+
+# Finally, to wrap the facet labels we get into the weeds a bit, an alternative would be to rename the Regions to shorter versions (e.g PWS for Prince William Sound). Here we will use a labeller function within the facet layer to specify that we want the facet label text to wrap.
+
+plot27<-ggplot(plotting.data, aes(x=median_income, y=var.y)) +
+  geom_point(aes(colour=lat), position=position_jitter(width=0.2)) +
+  scale_colour_continuous()+
+  facet_wrap(vars(var.x), labeller=label_wrap_gen(width=25, multi_line=TRUE)) +
+  labs(title="Percent of Households\nUsing Subsistence Salmon\nby Median Income", subtitle="At the community level,\nacross SASAP regions", caption="Use of subsistence salmon from ADF&G surveys.\n Median income from US Census, 2016.", x="Median Income (USD)", y="Percent of Households", colour="Latitude") + 
+  theme_minimal()
+plot27
+```
+
+* A note about labelling is that, so far, I have had a tough time creating labels using non-Latin alphabet characters. There are ways to do it and the closest that I have come to a solution is using packages developed by linguists. If this is something you might want to do, I'm happy to share what I have found in my searches. As a plug for language justice extending to software languages these two projects are really great:
+
+https://www.cbc.ca/radio/unreserved/indigenous-language-finding-new-ways-to-connect-with-culture-1.4923962/a-hawaiian-team-s-mission-to-translate-programming-language-to-their-native-language-1.4926124
+
+https://www.alaskapublic.org/2021/04/13/yupik-engineers-team-up-to-build-apps-for-yugtun-language-learning/*
+
+### Colours
+There is really no limits here on what you can do with colours. There are some "rules of thumb" and some accessibility considerations to keep in mind, along with the format you will be using your plots for (print vs online, journals that accept coloured plots, some journals have colour-schemes...).
+
+https://davidmathlogic.com/colorblind/
+
+Some preset colours are available in ggplot2. The viridisLite scales are perceptually uniform in both colour and black-and-white, and are designed with people who have common forms of colour blindness in mind.
+
+https://ggplot2-book.org/scale-colour.html
+
+```{r colours, warning=FALSE, message=FALSE}
+library(RColorBrewer)
+
+# You will need to consider what type of data you are asking ggplot to scale by. If continuous, you will likely want to use a gradient; if categorical (not ordered) you will want to use discrete colours (e.g. scale_colour_discrete, scale_colour_brewer). 
+plot28<- plot27 + 
+  scale_colour_viridis_b(direction=-1) 
+plot28
+
+
+plot29<- plot18 +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal()
+plot29
+
+# We can see here that the palette chosen does not have enough discrete values to cover all the regions in our dataset --this is an indication that it will be tough to tell different colours apart once you get above ~8 categories. Pairing colours with labels, and making sure similar colours are not adjacent becomes more important as you increase the number of categories and colours used.
+
+# If we want to set our own values, we can create a pallette, making sure there are enough values for the variable we are planning to use
+
+cbPallette=c("#cc6677", "#332288", "#ddcc77", "#117733", "#88CCEE", "#882255", "#44AA99", "#999933", "#AA4499", "#555555", "#EE7733", "#44BB99", "#004488")
+
+plot30<- plot18 +
+  scale_fill_manual(values=cbPallette)+
+  theme_minimal()
+plot30
+
+```
+
+## Patchwork
+The above introduced the basics of ggplot2 and how to use it to generate plots using layers. There are additional packages that can be helpful to polish and use the ggplot2 objects you have created. Here we will look at **patchwork**, above I used **Rcolourbrewer**, and others include **ggpubr**, **ggnetwork**, and **ggmap**.
+
+**Patchwork** if really useful if you want to work with the composition of your plots, and especially if you are looking to combine multiple plots, or other objects, in one figure. 
+
+```{r patchwork, message=FALSE, warning=FALSE}
+library(patchwork)
+
+plot28+plot30
+
+# We can adjust the default arrangement by specifying layout, there are a few ways to do this. We can use *plot_layout* to specify the number of rows or columns, we can also use the operators of / or | instead of + . / will stack plots vertically, | will place them next to each other.
+
+plot28 + plot30 + plot_layout(nrow=2, byrow=FALSE)
+
+plot28 / plot30
+
+# We can also continue to edit our ggplot2 objects. For this, the last plot listed (in our example, plot30) is considered the *active* plot and the specifications will be applied to it.
+
+plot28 | plot30 + labs(title="Percent of Households Using Subsistence Salmon", subtitle = "Average by Region", x="SASAP Region", y="Percent of Households") + theme(legend.position = "none")
+
+plot31<-plot30 +
+  labs(title="Percent of Households\nUsing Subsistence Salmon", subtitle = "Average by Region", x="SASAP Region", y="Percent of Households") +
+  theme(legend.position = "none")
+plot31
+
+# There are some additional changes we might want to make to ensure things are readable, but this gives us a good sense of what patchwork can let us do. Finally, pathwork can be used with ggplot objects that are not plots. This can by handy for including tables, images and graphics, matrices, and maps. The trick is that these objects have to be converted to ggplot objects--if they are not already, and this can require using additional packages.
+library(magick)
+library(ggpubr)
+
+map <- image_read("subsistence_percent_harvesting.png")
+map1 <- ggplot() +
+  background_image(map) + coord_fixed(ratio=1)
+
+combo1<-plot31 | plot28 | map1
+combo1
+
+ggsave(combo1, file = "combo.png", dpi = 700, width=12.35, height=5.78)
+```
+
+## Shiny Apps
+And then finally, I wanted to point you to the **shiny** package available with R, which provides a web application framework. I am just starting to explore this, but we can go to the shiny app gallery to see how **shiny** cna be used with ggplot2 to allow people to adjust input data and have compelling visuals returned.
+
+https://shiny.rstudio.com/gallery/soil-profiles.html
+https://shiny.rstudio.com/gallery/nutrition-calculator.html
+
+#### Citations
+```{r citations, warning=FALSE, message=FALSE, echo=FALSE}
+citation("ggplot2")
+citation("dplyr")
+citation("tidyr")
+citation("patchwork")
+citation("ggpubr")
+citation("magick")
+citation("RColorBrewer")
+citation("shiny")
+```
+
+Jeanette Clark, Rachel Donkersloot, Courtney Carothers, and Jessica Black. Sample indicators of well-being in Alaska. Knowledge Network for Biocomplexity. doi:10.5063/F1XK8CVG.

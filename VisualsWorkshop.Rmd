@@ -21,51 +21,37 @@ library (tidyr)
 ```
 
 ## Data and information sources
-The data we will be exploring come from the US Census, combined with fishing license data and subsistence catch data from the Alaska Department of Fish and Game. The dataset was consolidated and formatted by researchers, lead by Jeanette Clark, at the National Center for Ecological Analysis and Synthesis as part of the State of Alaskan Salmon and People project in collaboration with Drs. Courtney Carothers, Rachel Donkersloot, and Jessica Black (Gwich'in). The original datasets are all available through The Knowledge Network for Biocomplexity (https://knb.ecoinformatics.org/).
+The data we will be exploring come from the US Census, combined with fishing license data and subsistence catch data from the Alaska Department of Fish and Game. 
+
+The dataset was consolidated and formatted by researchers, led by Jeanette Clark, at the National Center for Ecological Analysis and Synthesis as part of the State of Alaskan Salmon and People project in collaboration with Drs. Courtney Carothers, Rachel Donkersloot, and Jessica Black (Gwich'in). The original datasets are all available through The Knowledge Network for Biocomplexity (https://knb.ecoinformatics.org/).
 
 ```{r census data, warning=FALSE, message=FALSE}
 wellbeing.ak <- read.csv("https://cn.dataone.org/cn/v2/resolve/urn:uuid:e031447c-7e00-4ce1-a0d9-d61bdef899b9", stringsAsFactors = F)
 
-colnames(wellbeing.ak)
 ```
 
 There are 18 variables included in the dataframe defined as:
 
-**1. region**= the designated region from the SASAP project; categorical, string
-
-**2. city**= the city, town, or village name; categorical, string
-
-**3. lat**= approximate latitude; continuous, decimal degrees
-
-**4. lng**= approximate longitude; continuous, decimal degrees
-
-**5. total_2016**= total population at the city scale; continuous, integer
-
-**6. median_income**= calculated median income from US Census 2016; continuous, integer
-
-**7. percent_pop_aian**= percent of the city population who identified as American Indian or Alaska Native on the 2016 US Census; continuous, percent
-
-**8. percent_pop_change**= change in population from 1980 to 2016 US Census; continuous, percent
-
-**9. percent_pop_poverty**= percent of the city population who are living below the federally defined poverty line according to the 2016 US Census; continuous, percent
-
-**10. comm_pcnt_initial**= percent of initial commericial salmon permits remaining in community; continuous, percent
-
-**11. comm_age_change_1980_2016**= change in the median age of commerical salmon permit holders from 1980-2016; continous, integer
-
-**12. subs_year**= year of subsistence survey; continuous, integer
-
-**13. subs_percent_households_harvesting**= percent of community households who harvested subsistence salmon in survey year; continuous, percent
-
-**14. subs_percent_households_using**= percent of community households who used subsistence salmon in survey year; continuous, percent
-
-**15. subs_lbs_per_capita_harvest**= weight (lbs) of subsistence salmon harvested per capita in survey year; continuous, integer
-
-**16.pu_lbs_harvested**= weight (lbs) of personal use salmon harvested in 2016; continuous, integer
-
-**17. pu_lbs_per_capita**= weight (lbs) of personal use salmon harvested per capita in 2016; continuous, integer
-
-**18. sport_license_per_capita**= number of sport fishing licenses sold per capita in 2016; continuous, integer
+| Variable | Description | Type |
+| -------- | ----------- | ---- |
+| region | the designated region from the SASAP project | character |
+| city | city, town, or village name | character |
+| lat | approximate latitude | double |
+| lng | approximate longitude | double |
+| total_2016 | total population at the city scale | integer |
+| median_income | calculated median income from US Census 2016 | integer |
+| percent_pop_aian | percent of the city population who identified as American Indian or Alaska Native on the 2016 US Census | double |
+| percent_pop_change | percent change in population from 1980 to 2016 US Census | double |
+| percent_pop_poverty | percent of the city population who are living below the federally defined poverty line according to the 2016 US Census | double |
+| comm_pcnt_initial | percent of initial commericial salmon permits remaining in community | double |
+| comm_age_change_1980_2016 | change in the median age of commerical salmon permit holders from 1980-2016 | double |
+| subs_year | year of subsistence survey | integer |
+| subs_percent_households_harvesting | percent of community households who harvested subsistence salmon in survey year | double
+| subs_percent_households_using | percent of community households who used subsistence salmon in survey year | double |
+| subs_lbs_per_capita_harvest | weight (lbs) of subsistence salmon harvested per capita in survey year | double |
+| pu_lbs_harvested | weight (lbs) of personal use salmon harvested in 2016 | double |
+| pu_lbs_per_capita | weight (lbs) of personal use salmon harvested per capita in 2016 | double |
+| sport_license_per_capita | number of sport fishing licenses sold per capita in 2016 | double |
 
 ## Using ggplot2 to create visuals
 Now that we have the dataframe loaded and are familiar with what all is included, we can start to explore using ggplot2 to create plots and visuals. As a basic introduction, ggplot2 uses a specific grammar of graphics (thus the gg) that relies on layers, which is similar to the way applications like Photoshop and ArcGIS operate. The layers in ggplot2 are ordered as: **data, mapping, geom, stat, position, scale, coord,** and **facet** and we will walk through adding and altering each layer using the above data.
@@ -73,21 +59,18 @@ Now that we have the dataframe loaded and are familiar with what all is included
 ### Data & Mapping
 The definition of the **data** and which variables **map** onto which aesthetics is required by ggplot2, you cannot proceed without it. Thankfully, it is fairly straightforward after you have decided which variables you are interested in. 
 
-From the among the variables above, what is a relationship that we would be interested in exploring through a plot?
+From the among the variables above, what is a relationship that we would be interested in exploring through a plot? 
 
+*I currently have it set to the percent of households using subsistence salmon (y) by region (x)*
 
 ```{r datamapping, message=FALSE, warning=FALSE}
-# We will rename those as the x and y variable. You can use the variable name directly in ggplot2, but this makes it easier to quickly change the variables you are exploring.
 
-plotting.data<-rename(wellbeing.ak, var.x=region)
-plotting.data<-rename(plotting.data, var.y=subs_percent_households_using)
-
-plot1<-ggplot(plotting.data, aes(x=var.x, y=var.y))
+plot1<-ggplot(wellbeing.ak, aes(x=region, y=subs_percent_households_using))
 
 plot1
 ```
 
-At this point, we can see that we have the variables on the correct axises and the scales have been set, but there are no data being displayed. We can also see the information that ggplot is holding about plot1 by entering *View()*. 
+At this point, we can see that we have the variables on the correct axises and the scales have been set, but there are no data being displayed. We can also see the information that ggplot is holding about plot1 by entering *View(plot1)*. 
 
 The next step is to decide how we want to visualise the data and let ggplot know so that it can project the data onto the coordinates we just set up.
 
@@ -95,6 +78,8 @@ The next step is to decide how we want to visualise the data and let ggplot know
 We accomplish this through the **geom** layer. There are many geoms available for using with ggplot2, each comes with its own preset functionalities and it takes some consideration of the type of data you are working with: is it continuous? categorical? and the relationships you are interested in exploring. A handy spot to gain familiarity with the range of geoms available is: https://ggplot2.tidyverse.org/reference/#section-layer-geoms.
 
 With these options and the variables that we chose, what geom would you be interested in trying?
+
+*Here are some examples*
 
 ```{r geom, warning=FALSE, message=FALSE}
 plot2<- plot1 +
@@ -147,6 +132,8 @@ plot10<- plot8 +
   geom_point(position=position_jitter(width=0.1))
 plot10
 
+# This will add more "noise"
+
 plot11<- plot8 +
   geom_point(position=position_jitter(width=0.4))
 plot11
@@ -157,7 +144,7 @@ plot12<- plot1 +
   geom_col(position=position_stack())
 plot12
 
-# Which could be informative, but we might need to add some colour to get a better sense of what is happening.
+# Which isn't super informative here, but we can use it to look at adding some colour to get a better sense of what is happening.
 
 plot12b<- plot1 +
   geom_col(position=position_stack(), colour="#769fad", fill="white")
@@ -184,22 +171,23 @@ We can use **scale** to define the colours and how they should be assigned based
 
 ```{r scale, warning=FALSE, message=FALSE}
 plot12c<- plot1 +
-  geom_col(position=position_stack(), aes(fill=var.y))+
+  geom_col(position=position_stack(),
+           aes(fill=subs_percent_households_using))+
   scale_colour_continuous()
 plot12c
 
 # We can also return to the dot plot to explore the addition of scaling
 
 plot13<- plot8 +
-  geom_point(aes(colour=var.x), position=position_jitter(width=0.2)) +
+  geom_point(aes(colour=region), position=position_jitter(width=0.2)) +
   scale_colour_discrete()
 plot13
 
 # We can also use scaling to add information that the positioning of the points does not already convey
 
 plot14<-plot8 +
-  geom_point(aes(colour=lat), position=position_jitter(width=0.2)) +
-  scale_colour_continuous()
+  geom_point(aes(colour=(lat)), position=position_jitter(width=0.2)) +
+  scale_colour_gradient(low="#0f3c52", high="#cfe9f7")
 plot14
 ```
 
@@ -209,12 +197,12 @@ For colouring, some geoms, like geom_bar, allow *fill* and *colour* to be define
 
 ```{r scale.fill, warning=FALSE, message=FALSE}
 plot15<- plot1 +
-  geom_bar(aes(colour=var.x), stat="summary", fun.y="mean") +
+  geom_bar(aes(colour=region), stat="summary", fun.y="mean") +
   scale_colour_discrete()
 plot15
 
 plot16<- plot1 +
-  geom_bar(aes(fill=var.x), stat="summary", fun.y="mean") +
+  geom_bar(aes(fill=region), stat="summary", fun.y="mean") +
   scale_colour_discrete()
 plot16
 ```
@@ -226,7 +214,7 @@ The *coordinate system* in all these examples has been defaulting to a Cartesian
 
 ```{r coord, warning=FALSE, message=FALSE}
 plot18<- plot1 +
-  geom_bar(aes(fill=var.x), stat="summary", fun.y="mean") +
+  geom_bar(aes(fill=region), stat="summary", fun.y="mean") +
   coord_polar() +
   scale_colour_discrete() 
 plot18
@@ -243,22 +231,24 @@ The final layer is to define the **facet**, which actually works by redifining t
 ```{r facet, message=FALSE, warning=FALSE}
 # We will change the x axis to median household income (USD) so we can look at the relationships across the regions, to do this we have to go all the way back to the data and mapping layer using ggplot()
 
-plot19<- ggplot(plotting.data, aes(x=median_income, y=var.y)) +
+plot19<- ggplot(wellbeing.ak, aes(x=median_income, y=subs_percent_households_using)) +
   geom_point(position=position_jitter(width=0.2))+
-  facet_wrap(vars(var.x))
+  facet_wrap(vars(region))
 plot19
 
-plot20<- ggplot(plotting.data, aes(x=median_income, y=var.y)) +
+plot20<- ggplot(wellbeing.ak, aes(x=median_income, y=subs_percent_households_using)) +
   geom_point(aes(colour=lat), position=position_jitter(width=0.2)) +
-  scale_colour_continuous()+
-  facet_wrap(vars(var.x))
+  scale_colour_gradient(low="#0f3c52", high="#cfe9f7")+
+  facet_wrap(vars(region))
 plot20
 ```
 
 
-You can see how we can easily start to explore a lot of information on the same plot. And this is really what I have found to be the strength of ggplot2. Moving from any of the plots above to something you might want to include in a presentation, report, or article takes a bit more fiddling. The good news is that for a lot of what you might want to do, someone has already done the fiddling for you (e.g. themes). And if they have not, or you want to make further changes you can do that once and then save it as a function that you can easily call for future plots and even other projects.
+You can see how we can easily start to explore a lot of information on the same plot. And this is really what I have found to be the strength of ggplot2. 
 
-## Making thing pretty --but also readable
+Moving from any of the plots above to something you might want to include in a presentation, report, or article takes a bit more fiddling. The good news is that for a lot of what you might want to do, someone has already done the fiddling for you (e.g. themes). And if they have not, or you want to make further changes you can do that once and then save it as a function that you can easily call for future plots and even other projects.
+
+## Making things pretty --but also readable
 If you are like me, this is where you can end up spending a lot of time. The best way to save yourself some time is to use **themes** that others have already created. These are easy to use and let you quickly set a lot of the formatting and colours.
 
 ### Themes
@@ -302,16 +292,16 @@ plot26
 
 # Finally, to wrap the facet labels we get into the weeds a bit, an alternative would be to rename the Regions to shorter versions (e.g PWS for Prince William Sound). Here we will use a labeller function within the facet layer to specify that we want the facet label text to wrap.
 
-plot27<-ggplot(plotting.data, aes(x=median_income, y=var.y)) +
+plot27<-ggplot(wellbeing.ak, aes(x=median_income, y=subs_percent_households_using)) +
   geom_point(aes(colour=lat), position=position_jitter(width=0.2)) +
-  scale_colour_continuous()+
-  facet_wrap(vars(var.x), labeller=label_wrap_gen(width=20, multi_line=TRUE)) +
+  scale_colour_gradient(low="#0f3c52", high="#cfe9f7")+
+  facet_wrap(vars(region), labeller=label_wrap_gen(width=20, multi_line=TRUE)) +
   labs(title="Percent of Households\nUsing Subsistence Salmon\nby Median Income", subtitle="At the community level,\nacross SASAP regions", caption="Use of subsistence salmon from ADF&G surveys.\n Median income from US Census, 2016.", x="Median Income (USD)", y="Percent of Households", colour="Latitude") + 
   theme_minimal()
 plot27
 ```
 
-* A note about labelling is that, so far, I have had a tough time creating labels using non-Latin alphabet characters. There are ways to do it and the closest that I have come to a solution is using packages developed by linguists. If this is something you might want to do, I'm happy to share what I have found in my searches. As a plug for language justice extending to software languages these two projects are really great:
+* A note about labelling is that, so far, I have had a tough time creating labels using non-Latin alphabet characters. There are ways to do it and the closest that I have come to a solution is using packages developed by linguists. If this is something you might want to do, I'm happy to share what I have found in my searches. As a plug for language justice extending to software languages these two projects might be of interest:
 
 https://www.cbc.ca/radio/unreserved/indigenous-language-finding-new-ways-to-connect-with-culture-1.4923962/a-hawaiian-team-s-mission-to-translate-programming-language-to-their-native-language-1.4926124
 
@@ -320,23 +310,25 @@ https://www.alaskapublic.org/2021/04/13/yupik-engineers-team-up-to-build-apps-fo
 * Another note, because the long region names keep coming up as challenges to keeping the plots readable, I am going to change the names in the original data.
 
 ```{r region rename, warning=FALSE, message=FALSE}
-plotting.data$var.x[plotting.data$var.x=="Alaska Peninsula and Aleutian Islands"]<-"AP&AI"
-plotting.data$var.x[plotting.data$var.x=="Cook Inlet"]<-"CI"
-plotting.data$var.x[plotting.data$var.x=="Prince William Sound"]<-"PWS"
-plotting.data$var.x[plotting.data$var.x=="Norton Sound"]<-"Norton S"
-plotting.data$var.x[plotting.data$var.x=="Bristol Bay"]<-"Bristol B"
-plotting.data$var.x[plotting.data$var.x=="Copper River"]<-"Copper R"
+wellbeing.ak$region[wellbeing.ak$region=="Alaska Peninsula and Aleutian Islands"]<-"AP&AI"
+wellbeing.ak$region[wellbeing.ak$region=="Cook Inlet"]<-"CI"
+wellbeing.ak$region[wellbeing.ak$region=="Prince William Sound"]<-"PWS"
+wellbeing.ak$region[wellbeing.ak$region=="Norton Sound"]<-"Norton S"
+wellbeing.ak$region[wellbeing.ak$region=="Bristol Bay"]<-"Bristol B"
+wellbeing.ak$region[wellbeing.ak$region=="Copper River"]<-"Copper R"
 
-plot27b<-ggplot(plotting.data, aes(x=median_income, y=var.y)) +
+plot27b<-ggplot(wellbeing.ak, aes(x=median_income, y=subs_percent_households_using)) +
   geom_point(aes(colour=lat), position=position_jitter(width=0.2)) +
-  scale_colour_continuous()+
-  facet_wrap(vars(var.x), labeller=label_wrap_gen(width=20, multi_line=TRUE)) +
-  labs(title="Percent of Households\nUsing Subsistence Salmon\nby Median Income", subtitle="At the community level,\nacross SASAP regions", caption="Use of subsistence salmon from ADF&G surveys.\n Median income from US Census, 2016.", x="Median Income (USD)", y="Percent of Households", colour="Latitude") + 
+  scale_colour_gradient(low="#0f3c52", high="#cfe9f7")+
+  facet_wrap(vars(region), labeller=label_wrap_gen(width=20,
+                                                   multi_line=TRUE)) +
+  labs(title="Percent of Households\nUsing Subsistence Salmon\nby Median Income", subtitle="At the community level,\nacross SASAP regions",
+       caption="Use of subsistence salmon from ADF&G surveys.\n Median income from US Census, 2016.", x="Median Income (USD)", y="Percent of Households", colour="Latitude") + 
   theme_minimal()
 plot27b
 
-plot16b<- ggplot(plotting.data, aes(x=var.x, y=var.y)) +
-  geom_bar(aes(fill=var.x), stat="summary", fun.y="mean") +
+plot16b<- ggplot(wellbeing.ak, aes(x=region, y=subs_percent_households_using)) +
+  geom_bar(aes(fill=region), stat="summary", fun.y="mean") +
   scale_colour_discrete()
 plot16b
 ```
@@ -376,6 +368,7 @@ plot30<- plot16b +
   theme(axis.text.x=element_text(angle = 45, hjust=1))
 plot30
 
+# Just as a note, none of these would really pass the test for *good* use of colour, the first has information that is only conveyed by colour--the recommendation is to also use different shapes and sizes--and the other two don't really need to have different colours for the regions.
 ```
 
 ## Patchwork

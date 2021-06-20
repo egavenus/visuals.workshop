@@ -9,13 +9,15 @@ author: "Erika Gavenus"
 date: "6/20/2021"
 output: html_document
 ---
-This workshop will introduce using ggplot2 to create visuals in R. It will use datasets from the State of Alaskan Salmon and People project and available from the Knowledge Network for Biocomplexity. While some familiarity with R can be useful in understanding what is happening within the ggplot2 package, this workshop will focus on introducing the functionality of ggplot2 using pre-cleaned datasets. 
+This workshop will introduce using ggplot2 to create visuals in R. It will use datasets from the State of Alaskan Salmon and People project and available from the Knowledge Network for Biocomplexity. 
 
-Finally, participants who do not already have R and R studio available on their computer can find directions to downloading it here: https://cran.rstudio.com/. If you want to follow along, it will be good to have R downloaded before the session.
+While some familiarity with R can be useful in understanding what is happening within the ggplot2 package, this workshop will focus on introducing the functionality of ggplot2 using pre-cleaned datasets. 
+
+Participants who do not already have R and R studio available on their computer can find directions to downloading it here:[R] https://cran.rstudio.com/ and [R Studio] https://www.rstudio.com/products/rstudio/download/#download. If you want to follow along, it will be good to have R downloaded before the session.
 
 ## Packages and Functions
 
-In R, a lot of the functions are within packages that others have developed. For this workshop we will be using dplyr (Wickham et al, 2020), ggplot2 (Wickham H, 2016), and tidyr (Wickham and Henry, 2020). Later on we will add other packages to support more customizable visuals.
+In R a lot of the functions are within packages that others have developed. For this workshop we will be using dplyr (Wickham et al, 2020), ggplot2 (Wickham H, 2016), and tidyr (Wickham and Henry, 2020). Later on we will add other packages to support more customizable visuals.
 
 Since these packages are already installed on my computer, I can use the *library()* function to load the required package. If you do not yet have these packages you can use *install.packages(c("dplyr", "ggplot2", "tidyr"))* to access them.
 
@@ -38,7 +40,7 @@ wellbeing.ak <- read.csv("https://cn.dataone.org/cn/v2/resolve/urn:uuid:e031447c
 There are 18 variables included in the dataframe defined as:
 
 | Variable | Description | Type |
-| -------- | ----------- | ---- |
+| -------- | ------------------------------------ | ---- |
 | region | the designated region from the SASAP project | character |
 | city | city, town, or village name | character |
 | lat | approximate latitude | double |
@@ -58,15 +60,21 @@ There are 18 variables included in the dataframe defined as:
 | pu_lbs_per_capita | weight (lbs) of personal use salmon harvested per capita in 2016 | double |
 | sport_license_per_capita | number of sport fishing licenses sold per capita in 2016 | double |
 
-And because the names of the regions are quite long and were causing the plots to be a bit clunky, we can rename them to shorter versions
+And because the names of the regions are quite long and were causing the plots to be a bit clunky, I am renaming them here to shorter versions, there are other ways to deal with this within the plots that I am happy to discuss if people are interested.
 ```{r renaming.regions, warning=FALSE, message=FALSE}
 wellbeing.ak$region[wellbeing.ak$region=="Alaska Peninsula and Aleutian Islands"]<-"AP&AI"
 wellbeing.ak$region[wellbeing.ak$region=="Cook Inlet"]<-"CI"
 wellbeing.ak$region[wellbeing.ak$region=="Prince William Sound"]<-"PWS"
-wellbeing.ak$region[wellbeing.ak$region=="Norton Sound"]<-"Norton S"
-wellbeing.ak$region[wellbeing.ak$region=="Bristol Bay"]<-"Bristol B"
-wellbeing.ak$region[wellbeing.ak$region=="Copper River"]<-"Copper R"
+wellbeing.ak$region[wellbeing.ak$region=="Norton Sound"]<-"Norton"
+wellbeing.ak$region[wellbeing.ak$region=="Bristol Bay"]<-"Bristol"
+wellbeing.ak$region[wellbeing.ak$region=="Copper River"]<-"Copper"
+wellbeing.ak$region[wellbeing.ak$region=="Kotzebue"]<-"Kotz."
+wellbeing.ak$region[wellbeing.ak$region=="Kuskokwim"]<-"Kusk."
 ```
+
+Here is a map of the regions for your reference:
+![SASAP Region Map](~/Box Sync/Lab/Summer2021/Rvisuals/VisualsWorkshop/SASAPRegions.png)
+
 
 ## Using ggplot2 to create visuals
 Now that we have the dataframe loaded and are familiar with what all is included, we can start to explore using ggplot2 to create plots and visuals. As a basic introduction, ggplot2 uses a specific grammar of graphics (thus the gg) that relies on layers, which is similar to the way applications like Photoshop and ArcGIS operate. The layers in ggplot2 are ordered as: **data, mapping, geom, stat, position, scale, coord,** and **facet** and we will walk through adding and altering each layer using the above data.
@@ -100,7 +108,7 @@ plot2<- plot1 +
   geom_point()
 plot2
 
-plot3<- plot1 +
+plot3<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_bin2d()
 plot3
 
@@ -119,7 +127,7 @@ plot5
 ```
 Those give you an idea of how the geoms are used to project the data we are exploring as a visual. 
 
-Those are useful geoms when both our variables are continuous, but what if we have a categorical variable on the x-axis, like region?
+Those are useful geoms when both our variables are continuous, but what if we have a **categorical variable** on the x-axis, like region?
 
 We start in the same way, by defining the data and mapping, then use different geoms to visualise:
 
@@ -139,13 +147,12 @@ plot9<- plot6 +
 plot9
 ```
 
-
 But what if we want to look at and start to compare the sum or average at the region level?
 
 ### Stat
 That is where **stat** comes in. Each geom has a default **stat**, in the geom_point example *identity* was used. That means that the plot will use the value in the cell to determine where to place the point or *f(x)=x*. 
 
-If we want to look at the average value for y for each x, we can set the **stat** to *summary* and specify that we want the plot to display the mean y value for each x.
+If we want to look at the average value for y for each x, we can set the **stat** to *summary* and specify that we want the plot to display the mean y value for each x or *fun.y="mean"*.
 
 ```{r stat, warning=FALSE, message=FALSE}
 plot10<- plot6 +
@@ -166,7 +173,7 @@ plot12
 ```
 
 ### Position
-In this plot we have some points that are overlapping, because they are all aligned to the center of the x-variable. Adjusting the **position** can help us see these better. Defining the **position** is also useful for creating stacked or grouped bar plots. 
+In this plot we have some points that are overlapping, because they are all aligned to the center of the x-variable. Adjusting the **position** can help us see these better.
 
 ```{r position, warning=FALSE, message=FALSE}
 # We can use position_jitter to add random "noise" to the x-value to reduce the overlap
@@ -200,19 +207,21 @@ plot17
 
 Here use *fill* and *colour* to set specific colours that we prefer to use for all the data. Note in this case *fill* and *colour* are not inside the *aes()* because they are not relying on the data.
 
-What if we want the colours to be reflective of the data, for example darker for higher harvest?
+What if we want the colours to be reflective of the data, for example different colours by amount harvested?
 
 ### Scale
 We can use **scale** to define the colours and how they should be assigned based on the data. For categorical data, discrete colour scales are recommended, for continous data gradiant colour scales are recommended. Here *colour* and *fill* will need to be within *aes()*
 
 ```{r scale, warning=FALSE, message=FALSE}
 plot18<- plot1 +
-  geom_point(aes(colour=subs_lbs_per_capita_harvest), position=position_jitter(width=0.2))+
+  geom_point(aes(colour=subs_lbs_per_capita_harvest),
+             position=position_jitter(width=0.2))+
   scale_colour_continuous()
 plot18
 
 plot19<- plot1 +
-  geom_point(aes(colour=region), position=position_jitter(width=0.2))+
+  geom_point(aes(colour=region), 
+             position=position_jitter(width=0.2))+
   scale_colour_discrete()
 plot19
 
@@ -268,8 +277,10 @@ The final layer is to define the **facet**, which actually works by redifining t
 
 ```{r facet, message=FALSE, warning=FALSE}
 plot25<- plot1 +
-  geom_point(aes(size=total_2016), colour="#0f3c52", alpha=0.5,
-               position=position_jitter(width=1)) +
+  geom_point(aes(size=total_2016), 
+             colour="#0f3c52", 
+             alpha=0.5,
+             position=position_jitter(width=1)) +
   scale_size_continuous(range=c(2,20)) +
   facet_wrap(vars(region))
 plot25
@@ -314,7 +325,9 @@ In these examples, labels are a spot where we can make a lot of improvements. We
 ```{r labs, warning=FALSE, message=FALSE}
 # If we go back to the example with the legend on the side
 plot30<-plot28 + 
-  labs(x="Latitude", y="Pounds per Capita", size="Total Population, 2016")
+  labs(x="Latitude", 
+       y="Pounds per Capita", 
+       size="Total Population, 2016")
 plot30
 
 # note that we can use \n to create a line break
@@ -340,20 +353,26 @@ https://www.alaskapublic.org/2021/04/13/yupik-engineers-team-up-to-build-apps-fo
 ### Colours
 There is really no limits here on what you can do with colours. There are some "rules of thumb" and some accessibility considerations to keep in mind, along with the format you will be using your plots for (print vs online, journals that accept coloured plots, some journals have colour-schemes...).
 
+More about colours:
+
 https://davidmathlogic.com/colorblind/
+
+https://ggplot2-book.org/scale-colour.html
 
 Some preset colours are available in ggplot2. The viridisLite scales are perceptually uniform in both colour and black-and-white, and are designed with people who have common forms of colour blindness in mind.
 
-https://ggplot2-book.org/scale-colour.html
 
 ```{r colours, warning=FALSE, message=FALSE}
 library(RColorBrewer)
 
 # You will need to consider what type of data you are asking ggplot to scale by. If continuous, you will likely want to use a gradient; if categorical (not ordered) you will want to use discrete colours (e.g. scale_colour_discrete, scale_colour_brewer). 
 
-plot32<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
-  geom_bar(stat="summary", fun.y="mean") +
-  geom_point(aes(colour=lat), position=position_jitter(0.2)) +
+plot32<- ggplot(wellbeing.ak, 
+                aes(x=region, y=subs_lbs_per_capita_harvest)) +
+  geom_bar(stat="summary", 
+           fun.y="mean") +
+  geom_point(aes(colour=lat), 
+             position=position_jitter(0.2)) +
   scale_colour_viridis_b(direction=-1) 
 plot32
 
@@ -370,7 +389,9 @@ plot33
 cbPallette=c("#cc6677", "#332288", "#ddcc77", "#117733", "#88CCEE", "#882255", "#44AA99", "#999933", "#AA4499", "#555555", "#EE7733", "#44BB99", "#004488")
 
 plot34<- plot1 +
-  geom_point(aes(shape=region, colour=region, size=total_2016),
+  geom_point(aes(shape=region, 
+                 colour=region, 
+                 size=total_2016),
              position=position_jitter(width=0.2)) +
   scale_shape_manual(values=c(1:13)) +
   scale_colour_manual(values=cbPallette) +
@@ -383,7 +404,7 @@ plot34
 ## Patchwork
 The above introduced the basics of ggplot2 and how to use it to generate plots using layers. There are additional packages that can be helpful to polish and use the ggplot2 objects you have created. Here we will look at **patchwork**, above I used **Rcolourbrewer**, and others include **ggpubr**, **ggnetwork**, and **ggmap**.
 
-**Patchwork** if really useful if you want to work with the composition of your plots, and especially if you are looking to combine multiple plots, or other objects, in one figure. 
+**Patchwork** is really useful if you want to work with the composition of your plots, and especially if you are looking to combine multiple plots, or other objects, in one figure. 
 
 ```{r patchwork, message=FALSE, warning=FALSE}
 library(patchwork)
@@ -394,9 +415,9 @@ plot31+plot32
 
 plot31 + plot32 + plot_layout(nrow=2, byrow=FALSE)
 
-plot32 / plot31
+plot31 / plot32
 
-# We can also continue to edit our ggplot2 objects. For this, the last plot listed (in our example, plot30) is considered the *active* plot and the specifications will be applied to it.
+# We can also continue to edit our ggplot2 objects. For this, the last plot listed (in our example, plot32) is considered the *active* plot and the specifications will be applied to it.
 
 plot31 | plot32 + 
   labs(title="Salmon Harvested for Subsistence by Region", 
@@ -406,6 +427,8 @@ plot31 | plot32 +
        colour="Latitude") + 
   theme(legend.position = "bottom",
         axis.text.x = element_text(angle = 45, hjust=1))
+
+# To make those changes retrievable later, we need to create a new plot
 
 plot33<-plot32 +
   labs(title="Salmon Harvested for Subsistence by Region", 
@@ -418,6 +441,7 @@ plot33<-plot32 +
 plot33
 
 # There are some additional changes we might want to make to ensure things are readable, but this gives us a good sense of what patchwork can let us do. Finally, pathwork can be used with ggplot objects that are not plots. This can by handy for including tables, images and graphics, matrices, and maps. The trick is that these objects have to be converted to ggplot objects--if they are not already, and this can require using additional packages.
+
 library(magick)
 library(ggpubr)
 
@@ -433,12 +457,12 @@ ggsave(combo1, file = "combo.png", dpi = 700, width=12.35, height=5.78)
 ```
 
 ## Shiny Apps
-And then finally, I wanted to point you to the **shiny** package available with R, which provides a web application framework. I am just starting to explore this, but we can go to the shiny app gallery to see how **shiny** cna be used with ggplot2 to allow people to adjust input data and have compelling visuals returned.
+And then finally, I wanted to point you to the **shiny** package available with R, which provides a web application framework. I am just starting to explore this, but we can go to the shiny app gallery to see how **shiny** can be used with ggplot2 to allow people to adjust input data and have compelling visuals returned.
 
 https://shiny.rstudio.com/gallery/soil-profiles.html
 
 ### Upcoming Workshops
-*Introdution to R and R Studio *
+*Introdution to R and R Studio*
 https://libcal.library.ubc.ca/event/3612117
 
 *Vizualization with R*

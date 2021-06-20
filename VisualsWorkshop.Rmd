@@ -73,7 +73,12 @@ wellbeing.ak$region[wellbeing.ak$region=="Kuskokwim"]<-"Kusk."
 ```
 
 Here is a map of the regions for your reference:
-![SASAP Region Map](~/Box Sync/Lab/Summer2021/Rvisuals/VisualsWorkshop/SASAPRegions.png)
+```{r map, message=FALSE, warning=FALSE, echo=FALSE}
+library(magick)
+regions <- image_read("SASAPRegions.png")
+
+regions
+```
 
 
 ## Using ggplot2 to create visuals

@@ -109,7 +109,7 @@ With these options and the variables that we chose, what geom would you be inter
 *Here are some examples*
 
 ```{r geom, warning=FALSE, message=FALSE}
-plot2<- plot1 +
+plot2<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point()
 plot2
 
@@ -123,7 +123,8 @@ plot4
 
 # We can also combine multiple geoms
 
-plot5<-plot2+
+plot5<-ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
+  geom_point() +
   geom_smooth(method="glm") +
   geom_text(aes(label=city), check_overlap = TRUE)
 plot5
@@ -139,15 +140,15 @@ We start in the same way, by defining the data and mapping, then use different g
 ```{r categorical, warning=FALSE, message=FALSE}
 plot6<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest))
 
-plot7<- plot6 +
+plot7<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_point()
 plot7
 
-plot8<- plot6 +
+plot8<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_boxplot()
 plot8
 
-plot9<- plot6 +
+plot9<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_violin()
 plot9
 ```
@@ -160,19 +161,20 @@ That is where **stat** comes in. Each geom has a default **stat**, in the geom_p
 If we want to look at the average value for y for each x, we can set the **stat** to *summary* and specify that we want the plot to display the mean y value for each x or *fun.y="mean"*.
 
 ```{r stat, warning=FALSE, message=FALSE}
-plot10<- plot6 +
+plot10<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_point(stat="summary", fun.y="mean")
 plot10
 
 # we can also use different geoms now that might have made less sense when visualising each community's data
 
-plot11<- plot6 +
+plot11<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_bar(stat="summary", fun.y="mean")
 plot11
 
 # finally we can combine these together if we want to have both the summary and individual community data
 
-plot12<- plot11 +
+plot12<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
+  geom_bar(stat="summary", fun.y="mean") +
   geom_point()
 plot12
 ```
@@ -183,13 +185,15 @@ In this plot we have some points that are overlapping, because they are all alig
 ```{r position, warning=FALSE, message=FALSE}
 # We can use position_jitter to add random "noise" to the x-value to reduce the overlap
 
-plot13<- plot11 +
+plot13<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
+  geom_bar(stat="summary", fun.y="mean") +
   geom_point(position=position_jitter(width=0.1))
 plot13
 
 # This will add more "noise"
 
-plot14<- plot11 +
+plot14<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
+  geom_bar(stat="summary", fun.y="mean") +
   geom_point(position=position_jitter(width=0.4))
 plot14
 ```
@@ -200,12 +204,12 @@ plot14
 
 plot15<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) 
 
-plot16<- plot15+
+plot16<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_col(position=position_stack())
 plot16
 
 # Which we can change the colours for to get a better visual
-plot17<- plot16 +
+plot17<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_col(position=position_stack(), colour="#769fad", fill="white")
 plot17
 ```
@@ -218,13 +222,13 @@ What if we want the colours to be reflective of the data, for example different 
 We can use **scale** to define the colours and how they should be assigned based on the data. For categorical data, discrete colour scales are recommended, for continous data gradiant colour scales are recommended. Here *colour* and *fill* will need to be within *aes()*
 
 ```{r scale, warning=FALSE, message=FALSE}
-plot18<- plot1 +
+plot18<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point(aes(colour=subs_lbs_per_capita_harvest),
              position=position_jitter(width=0.2))+
   scale_colour_continuous()
 plot18
 
-plot19<- plot1 +
+plot19<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point(aes(colour=region), 
              position=position_jitter(width=0.2))+
   scale_colour_discrete()
@@ -233,13 +237,13 @@ plot19
 
 # Scaling can also be used to assign different shapes, line type, size, and transparency.
 
-plot20<- plot1 +
+plot20<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point(aes(shape=region, colour=region),
              position=position_jitter(width=0.2)) + 
   scale_shape_manual(values=c(1:13))
 plot20
 
-plot21<- plot1 +
+plot21<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point(aes(colour=region, size=total_2016),
                position=position_jitter(width=0.2)) +
   scale_size_continuous(range=c(1,20))
@@ -250,12 +254,12 @@ plot21
 For colouring, some geoms, like geom_bar, allow *fill* and *colour* to be defined.
 
 ```{r scale.fill, warning=FALSE, message=FALSE}
-plot22<- plot11 +
+plot22<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_bar(aes(colour=region), stat="summary", fun.y="mean") +
   scale_colour_discrete()
 plot22
 
-plot23<- plot11 +
+plot23<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_bar(aes(fill=region), stat="summary", fun.y="mean") +
   scale_colour_discrete()
 plot23
@@ -265,10 +269,10 @@ plot23
 The *coordinate system* in all these examples has been defaulting to a Cartesian coordinate system, which is the most common for two dimensions. This will usually be sufficient. However, if you are interested in creating pie charts or spider-plots, you will need to change the coordinate system. 
 
 ```{r coord, warning=FALSE, message=FALSE}
-plot24<- plot11 +
+plot24<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
   geom_bar(aes(fill=region), stat="summary", fun.y="mean") +
-  coord_polar() +
-  scale_colour_discrete() 
+  scale_colour_discrete() +
+  coord_polar()
 plot24
 ```
 
@@ -281,7 +285,7 @@ Here is a helpful spot to check for more discussion on what might be considered 
 The final layer is to define the **facet**, which actually works by redifining the coordinate system, but we don't really have to worry about that. **Facet** allows us to create multiple, smaller plots so we can explore if relationships are common across other variables.
 
 ```{r facet, message=FALSE, warning=FALSE}
-plot25<- plot1 +
+plot25<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point(aes(size=total_2016), 
              colour="#0f3c52", 
              alpha=0.5,
@@ -301,7 +305,13 @@ If you are like me, this is where you can end up spending a lot of time. The bes
 
 ### Themes
 ```{r themes, warning=FALSE, message=FALSE}
-plot26<- plot25 +
+plot26<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
+  geom_point(aes(size=total_2016), 
+             colour="#0f3c52", 
+             alpha=0.5,
+             position=position_jitter(width=1)) +
+  scale_size_continuous(range=c(2,20)) +
+  facet_wrap(vars(region)) +
   theme_bw()
 plot26
 
@@ -319,7 +329,14 @@ To modify components of a theme use **theme()**.
 
 ```{r theme.mod, warning=FALSE, message=FALSE}
 # Here we can move the legend to the bottom
-plot29<- plot28 +
+plot29<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
+  geom_point(aes(size=total_2016), 
+             colour="#0f3c52", 
+             alpha=0.5,
+             position=position_jitter(width=1)) +
+  scale_size_continuous(range=c(2,20)) +
+  facet_wrap(vars(region)) +
+  theme_minimal() +
   theme(legend.position="bottom")
 plot29
 ```
@@ -329,10 +346,19 @@ In these examples, labels are a spot where we can make a lot of improvements. We
 
 ```{r labs, warning=FALSE, message=FALSE}
 # If we go back to the example with the legend on the side
-plot30<-plot28 + 
+plot30<-ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
+  geom_point(aes(size=total_2016), 
+             colour="#0f3c52", 
+             alpha=0.5,
+             position=position_jitter(width=1)) +
+  scale_size_continuous(range=c(2,20)) +
+  facet_wrap(vars(region)) +
+  theme_minimal() +
+  theme(legend.position="bottom") + 
   labs(x="Latitude", 
        y="Pounds per Capita", 
        size="Total Population, 2016")
+
 plot30
 
 # note that we can use \n to create a line break
@@ -382,7 +408,10 @@ plot32<- ggplot(wellbeing.ak,
 plot32
 
 
-plot33<- plot21 +
+plot33<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
+  geom_point(aes(colour=region, size=total_2016),
+               position=position_jitter(width=0.2)) +
+  scale_size_continuous(range=c(1,20)) +
   scale_colour_brewer(palette = "Set2") +
   theme_minimal()
 plot33
@@ -393,7 +422,7 @@ plot33
 
 cbPallette=c("#cc6677", "#332288", "#ddcc77", "#117733", "#88CCEE", "#882255", "#44AA99", "#999933", "#AA4499", "#555555", "#EE7733", "#44BB99", "#004488")
 
-plot34<- plot1 +
+plot34<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point(aes(shape=region, 
                  colour=region, 
                  size=total_2016),

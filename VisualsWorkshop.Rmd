@@ -6,7 +6,7 @@ knit: (function(input_file, encoding) {
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "Erika Gavenus"
-date: "6/20/2021"
+date: "6/23/2021"
 output: html_document
 ---
 This workshop will introduce using ggplot2 to create visuals in R. It will use datasets from the State of Alaskan Salmon and People project and available from the Knowledge Network for Biocomplexity. 
@@ -14,6 +14,32 @@ This workshop will introduce using ggplot2 to create visuals in R. It will use d
 While some familiarity with R can be useful in understanding what is happening within the ggplot2 package, this workshop will focus on introducing the functionality of ggplot2 using pre-cleaned datasets. 
 
 Participants who do not already have R and R studio available on their computer can find directions to downloading it here:[R] https://cran.rstudio.com/ and [R Studio] https://www.rstudio.com/products/rstudio/download/#download. If you want to follow along, it will be good to have R downloaded before the session.
+
+
+## Why is using R helpful for making plots?
+
+#### Reproducible
+This is probably the biggest selling point of R for me. Of the different programs I have used to create plots, R is by far the most straightforward for updating the plots as new data becomes available, as collaborators ask for changes, or as is often the case for me when you walk away from a project for some time and need to remember what actually is going on. This also makes it easier to share plots and have others contribute to them in a way that you can track.
+
+#### All in one place
+Another stength is that you can work with and clean your data, run statistical tests and models, and generate very compelling and customizable plots all in one place. And you have a record of all of that. 
+
+#### Lots of support
+R is very popular and there is a lot of support online, both in the form of packages and documentation and in places like StachOverflow where people help address questions and problems people are facing.
+
+## Why can it be really frustrating?
+#### Lots of support
+There is a flip side to all that support, and that is that sometimes there are multiple ways to address a question and it can be challenging to sift through the best approach. Also, it seems like all that support comes with strong opinions on what is right/wrong, which I have found intimidating as someone whow dabbles. 
+
+The ability to find precise answers can also make it tempting to just copy the script over, which doesn't always provide the best toolset for the next time you run into an almost the same problem.
+
+#### Doesn't always fit with how I think
+There are some aspects of R and ggplot2 that just don't fit with how I think about data, and they can be frustrating to encounter. For example the stacked bar chart for the food baskets required the data to be in long format; it can be more straightforward to actually create new dataframes then only select certain rows for a plot; and (...).
+
+#### Opinions are baked in
+And finally, especialy with ggplot2 and other packages, the opinions of the creators can be baked in. For example, it is purposefully not straightfoward to make a pie chart in ggplot2 --something about our ability to compare angles? That is just to say that if you have a specific vision for the form the plot is going to take, and what you are going to include, you might run up against these. I like to think of them as speedbumps, kind of little warnings to slow down for a second and check if what I have in mind actually makes sense.
+
+**Today we are going to try to maximize the helpful and minimize the frustrating**
 
 ## Packages and Functions
 
@@ -61,6 +87,7 @@ There are 18 variables included in the dataframe defined as:
 | sport_license_per_capita | number of sport fishing licenses sold per capita in 2016 | double |
 
 And because the names of the regions are quite long and were causing the plots to be a bit clunky, I am renaming them here to shorter versions, there are other ways to deal with this within the plots that I am happy to discuss if people are interested.
+
 ```{r renaming.regions, warning=FALSE, message=FALSE}
 wellbeing.ak$region[wellbeing.ak$region=="Alaska Peninsula and Aleutian Islands"]<-"AP&AI"
 wellbeing.ak$region[wellbeing.ak$region=="Cook Inlet"]<-"CI"
@@ -71,6 +98,8 @@ wellbeing.ak$region[wellbeing.ak$region=="Copper River"]<-"Copper"
 wellbeing.ak$region[wellbeing.ak$region=="Kotzebue"]<-"Kotz."
 wellbeing.ak$region[wellbeing.ak$region=="Kuskokwim"]<-"Kusk."
 ```
+
+
 
 Here is a map of the regions for your reference:
 ```{r map, message=FALSE, warning=FALSE, echo=FALSE}
@@ -84,9 +113,9 @@ regions
 ## Using ggplot2 to create visuals
 Now that we have the dataframe loaded and are familiar with what all is included, we can start to explore using ggplot2 to create plots and visuals. As a basic introduction, ggplot2 uses a specific grammar of graphics (thus the gg) that relies on layers, which is similar to the way applications like Photoshop and ArcGIS operate. The layers in ggplot2 are ordered as: **data, mapping, geom, stat, position, scale, coord,** and **facet** and we will walk through adding and altering each layer using the above data.
 
+
 ### Data & Mapping
 The definition of the **data** and which variables **map** onto which aesthetics is required by ggplot2, you cannot proceed without it. Thankfully, it is fairly straightforward after you have decided which variables you are interested in. 
-
 
 *Here I have it set to the per capita harvest of salmon for subsistence (y) by latitude (x)*
 
@@ -97,9 +126,11 @@ plot1<-ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest))
 plot1
 ```
 
+
 At this point, we can see that we have the variables on the correct axises and the scales have been set, but there are no data being displayed. We can also see the information that ggplot is holding about plot1 by entering *View(plot1)*. 
 
 The next step is to decide how we want to visualise the data and let ggplot know so that it can project the data onto the coordinates we just set up.
+
 
 ### Geom
 We accomplish this through the **geom** layer. There are many geoms available for using with ggplot2, each comes with its own preset functionalities and it takes some consideration of the type of data you are working with: is it continuous? categorical? and the relationships you are interested in exploring. A handy spot to gain familiarity with the range of geoms available is: https://ggplot2.tidyverse.org/reference/#section-layer-geoms.

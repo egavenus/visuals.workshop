@@ -510,7 +510,7 @@ plot33
 library(magick)
 library(ggpubr)
 
-map <- image_read("subsistence_percent_harvesting.png")
+map <- image_read("SASAPRegions.png")
 map1 <- ggplot() +
   background_image(map) + coord_fixed(ratio=1)
 

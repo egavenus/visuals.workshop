@@ -41,24 +41,7 @@ And finally, especialy with ggplot2 and other packages, the opinions of the crea
 
 **Today we are going to try to maximize the helpful and minimize the frustrating**
 
-## Examples
-```{r examples, message=FALSE, warning=FALSE, echo=FALSE}
-library(magick)
-freqcombo<- image_read("Freq.combo.example.png")
-freqcombo
 
-baskets<- image_read("ComboBasketsExample.png")
-baskets
-
-salmon.milk<-image_read("Salmon.Milk.Example.png")
-salmon.milk
-
-caloricneeds<- image_read("CaloricNeeds.png")
-caloricneeds
-
-HFIAS<- image_read("HFIASFitted.png")
-HFIAS
-```
 
 ## Packages and Functions
 

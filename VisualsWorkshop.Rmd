@@ -483,6 +483,12 @@ plot34<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
 plot34
 
 ```
+## GGSave
+A nice part about RStudio is that you can see the plots and get a sense of what they look like. However, it is important to know that they are just temporary, once you close your session they will no longer be available to you, unless you save them. You can save ggplot items as .pdf, .png, .jpg and other formats using `ggsave`. 
+
+```{r ggsave, warning=FALSE, message=FALSE}
+ggsave(plot34, file="lat.harvest.region.png", dpi=400, width=10.5, height=6)
+```
 
 ## Patchwork
 The above introduced the basics of ggplot2 and how to use it to generate plots using layers. There are additional packages that can be helpful to polish and use the ggplot2 objects you have created. Here we will look at `patchwork`, above I used `Rcolourbrewer`, and others include `ggpubr`, `ggnetwork`, and `ggmap`.

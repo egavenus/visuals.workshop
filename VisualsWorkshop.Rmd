@@ -15,37 +15,56 @@ While some familiarity with R can be useful in understanding what is happening w
 
 Participants who do not already have R and R studio available on their computer can find directions to downloading it here:[R] https://cran.rstudio.com/ and [R Studio] https://www.rstudio.com/products/rstudio/download/#download. If you want to follow along, it will be good to have R downloaded before the session.
 
-
 ## Why is using R helpful for making plots?
 
 #### Reproducible
-This is probably the biggest selling point of R for me. Of the different programs I have used to create plots, R is by far the most straightforward for updating the plots as new data becomes available, as collaborators ask for changes, or as is often the case for me when you walk away from a project for some time and need to remember what actually is going on. This also makes it easier to share plots and have others contribute to them in a way that you can track.
+This is probably the biggest selling point of R for me. Of the different programs I have used to create plots, R is by far the most straightforward for updating the plots as new data becomes available, as collaborators ask for changes, or as is often the case for me when you walk away from a project for some time and need to remember what actually is going on. This also makes it easier to share plots and have others contribute to them in a way that you can track. And finally, any changes you make do not alter your original data.
 
 #### All in one place
-Another stength is that you can work with and clean your data, run statistical tests and models, and generate very compelling and customizable plots all in one place. And you have a record of all of that. 
+Another stength is that you can work with and clean your data, run statistical tests and models, and generate very compelling and customizable plots all in one place. And you have a record or "audit trail" of all of that. 
 
 #### Lots of support
 R is very popular and there is a lot of support online, both in the form of packages and documentation and in places like StachOverflow where people help address questions and problems people are facing.
 
 ## Why can it be really frustrating?
+
 #### Lots of support
 There is a flip side to all that support, and that is that sometimes there are multiple ways to address a question and it can be challenging to sift through the best approach. Also, it seems like all that support comes with strong opinions on what is right/wrong, which I have found intimidating as someone whow dabbles. 
 
 The ability to find precise answers can also make it tempting to just copy the script over, which doesn't always provide the best toolset for the next time you run into an almost the same problem.
 
 #### Doesn't always fit with how I think
-There are some aspects of R and ggplot2 that just don't fit with how I think about data, and they can be frustrating to encounter. For example the stacked bar chart for the food baskets required the data to be in long format; it can be more straightforward to actually create new dataframes then only select certain rows for a plot; and (...).
+There are some aspects of R and ggplot2 that just don't fit with how I think about data, and they can be frustrating to encounter. For example the stacked bar chart for the food baskets required the data to be in long format; it can be more straightforward to actually create new dataframes then only select certain rows for a plot; and the strengths of using tabular data (I like keeping data with its context).
 
 #### Opinions are baked in
 And finally, especialy with ggplot2 and other packages, the opinions of the creators can be baked in. For example, it is purposefully not straightfoward to make a pie chart in ggplot2 --something about our ability to compare angles? That is just to say that if you have a specific vision for the form the plot is going to take, and what you are going to include, you might run up against these. I like to think of them as speedbumps, kind of little warnings to slow down for a second and check if what I have in mind actually makes sense.
 
 **Today we are going to try to maximize the helpful and minimize the frustrating**
 
+## Examples
+```{r examples, message=FALSE, warning=FALSE, echo=FALSE}
+library(magick)
+freqcombo<- image_read("Freq.combo.example.png")
+freqcombo
+
+baskets<- image_read("ComboBasketsExample.png")
+baskets
+
+salmon.milk<-image_read("Salmon.Milk.Example.png")
+salmon.milk
+
+caloricneeds<- image_read("CaloricNeeds.png")
+caloricneeds
+
+HFIAS<- image_read("HFIASFitted.png")
+HFIAS
+```
+
 ## Packages and Functions
 
-In R a lot of the functions are within packages that others have developed. For this workshop we will be using dplyr (Wickham et al, 2020), ggplot2 (Wickham H, 2016), and tidyr (Wickham and Henry, 2020). Later on we will add other packages to support more customizable visuals.
+In R a lot of the functions are within packages that others have developed. For this workshop we will be using `dplyr` (Wickham et al, 2020), `ggplot2` (Wickham H, 2016), and `tidyr` (Wickham and Henry, 2020). Later on we will add other packages to support more customizable visuals.
 
-Since these packages are already installed on my computer, I can use the *library()* function to load the required package. If you do not yet have these packages you can use *install.packages(c("dplyr", "ggplot2", "tidyr"))* to access them.
+Since these packages are already installed on my computer, I can use the `library()` function to load the required package. If you do not yet have these packages you can use `install.packages(c("dplyr", "ggplot2", "tidyr"))` to access them.
 
 ```{r libraries, warnings=FALSE, message=FALSE}
 library (dplyr)
@@ -66,7 +85,7 @@ wellbeing.ak <- read.csv("https://cn.dataone.org/cn/v2/resolve/urn:uuid:e031447c
 There are 18 variables included in the dataframe defined as:
 
 | Variable | Description | Type |
-| -------- | ------------------------------------ | ---- |
+| -------- | ----------------------------------------- | ---- |
 | region | the designated region from the SASAP project | character |
 | city | city, town, or village name | character |
 | lat | approximate latitude | double |
@@ -86,7 +105,7 @@ There are 18 variables included in the dataframe defined as:
 | pu_lbs_per_capita | weight (lbs) of personal use salmon harvested per capita in 2016 | double |
 | sport_license_per_capita | number of sport fishing licenses sold per capita in 2016 | double |
 
-And because the names of the regions are quite long and were causing the plots to be a bit clunky, I am renaming them here to shorter versions, there are other ways to deal with this within the plots that I am happy to discuss if people are interested.
+And because the names of the regions are quite long and were causing the plots to be a bit clunky, I am renaming them here to shorter versions. You do not have to worry about this. There are other ways to deal with this within the plots that I am happy to discuss if people are interested.
 
 ```{r renaming.regions, warning=FALSE, message=FALSE}
 wellbeing.ak$region[wellbeing.ak$region=="Alaska Peninsula and Aleutian Islands"]<-"AP&AI"
@@ -98,7 +117,6 @@ wellbeing.ak$region[wellbeing.ak$region=="Copper River"]<-"Copper"
 wellbeing.ak$region[wellbeing.ak$region=="Kotzebue"]<-"Kotz."
 wellbeing.ak$region[wellbeing.ak$region=="Kuskokwim"]<-"Kusk."
 ```
-
 
 
 Here is a map of the regions for your reference:
@@ -113,9 +131,8 @@ regions
 ## Using ggplot2 to create visuals
 Now that we have the dataframe loaded and are familiar with what all is included, we can start to explore using ggplot2 to create plots and visuals. As a basic introduction, ggplot2 uses a specific grammar of graphics (thus the gg) that relies on layers, which is similar to the way applications like Photoshop and ArcGIS operate. The layers in ggplot2 are ordered as: **data, mapping, geom, stat, position, scale, coord,** and **facet** and we will walk through adding and altering each layer using the above data.
 
-
 ### Data & Mapping
-The definition of the **data** and which variables **map** onto which aesthetics is required by ggplot2, you cannot proceed without it. Thankfully, it is fairly straightforward after you have decided which variables you are interested in. 
+The definition of the **data** and which variables **map** onto which aesthetics is required by `ggplot2`. Thankfully, it is fairly straightforward after you have decided which variables you are interested in. 
 
 *Here I have it set to the per capita harvest of salmon for subsistence (y) by latitude (x)*
 
@@ -127,13 +144,15 @@ plot1
 ```
 
 
-At this point, we can see that we have the variables on the correct axises and the scales have been set, but there are no data being displayed. We can also see the information that ggplot is holding about plot1 by entering *View(plot1)*. 
+At this point, we can see that we have the variables on the correct axises and the scales have been set, but there are no data being displayed. We can also see the information that ggplot is holding about plot1 by entering `View(plot1)`. 
 
 The next step is to decide how we want to visualise the data and let ggplot know so that it can project the data onto the coordinates we just set up.
 
 
 ### Geom
-We accomplish this through the **geom** layer. There are many geoms available for using with ggplot2, each comes with its own preset functionalities and it takes some consideration of the type of data you are working with: is it continuous? categorical? and the relationships you are interested in exploring. A handy spot to gain familiarity with the range of geoms available is: https://ggplot2.tidyverse.org/reference/#section-layer-geoms.
+We accomplish this through the **geom** layer. There are many geoms available for using with `ggplot2`, each comes with its own preset functionalities and it takes some consideration of the type of data you are working with: is it continuous? categorical? and the relationships you are interested in exploring. 
+
+A handy spot to gain familiarity with the range of geoms available is: https://ggplot2.tidyverse.org/reference/#section-layer-geoms.
 
 With these options and the variables that we chose, what geom would you be interested in trying?
 
@@ -187,9 +206,9 @@ plot9
 But what if we want to look at and start to compare the sum or average at the region level?
 
 ### Stat
-That is where **stat** comes in. Each geom has a default **stat**, in the geom_point example *identity* was used. That means that the plot will use the value in the cell to determine where to place the point or *f(x)=x*. 
+That is where **stat** comes in. Each geom has a default **stat**, in the `geom_point` example `identity` was used. That means that the plot will use the value in the cell to determine where to place the point or `f(x)=x`. 
 
-If we want to look at the average value for y for each x, we can set the **stat** to *summary* and specify that we want the plot to display the mean y value for each x or *fun.y="mean"*.
+If we want to look at the average value for y for each x, we can set the **stat** to `summary` and specify that we want the plot to display the mean y value for each x or `fun.y="mean"`.
 
 ```{r stat, warning=FALSE, message=FALSE}
 plot10<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
@@ -245,12 +264,12 @@ plot17<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
 plot17
 ```
 
-Here use *fill* and *colour* to set specific colours that we prefer to use for all the data. Note in this case *fill* and *colour* are not inside the *aes()* because they are not relying on the data.
+Here use `fill` and `colour` to set specific colours that we prefer to use for all the data. Note in this case `fill` and `colour` are not inside the `aes()` because they are not relying on the data.
 
 What if we want the colours to be reflective of the data, for example different colours by amount harvested?
 
 ### Scale
-We can use **scale** to define the colours and how they should be assigned based on the data. For categorical data, discrete colour scales are recommended, for continous data gradiant colour scales are recommended. Here *colour* and *fill* will need to be within *aes()*
+We can use **scale** to define the colours and how they should be assigned based on the data. For categorical data, discrete colour scales are recommended, for continous data gradiant colour scales are recommended. Here `colour` and `fill` will need to be within `aes()`
 
 ```{r scale, warning=FALSE, message=FALSE}
 plot18<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
@@ -282,7 +301,7 @@ plot21
 ```
 
 
-For colouring, some geoms, like geom_bar, allow *fill* and *colour* to be defined.
+For colouring, some geoms, like geom_bar, allow `fill` and `colour` to be defined.
 
 ```{r scale.fill, warning=FALSE, message=FALSE}
 plot22<- ggplot(wellbeing.ak, aes(x=region, y=subs_lbs_per_capita_harvest)) +
@@ -356,7 +375,7 @@ plot28
 ```
 
 
-To modify components of a theme use **theme()**.
+To modify components of a theme use `theme()`.
 
 ```{r theme.mod, warning=FALSE, message=FALSE}
 # Here we can move the legend to the bottom
@@ -373,10 +392,9 @@ plot29
 ```
 
 ### Labels
-In these examples, labels are a spot where we can make a lot of improvements. We have x and y variables that are not described very well, and region names that are long and running over. Most of these can be adjusted by adding a *labs()* layer. 
+In these examples, labels are a spot where we can make a lot of improvements. We have x and y variables that are not described very well, and region names that are long and running over. Most of these can be adjusted by adding a `labs()` layer. 
 
 ```{r labs, warning=FALSE, message=FALSE}
-# If we go back to the example with the legend on the side
 plot30<-ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
   geom_point(aes(size=total_2016), 
              colour="#0f3c52", 
@@ -467,9 +485,9 @@ plot34
 ```
 
 ## Patchwork
-The above introduced the basics of ggplot2 and how to use it to generate plots using layers. There are additional packages that can be helpful to polish and use the ggplot2 objects you have created. Here we will look at **patchwork**, above I used **Rcolourbrewer**, and others include **ggpubr**, **ggnetwork**, and **ggmap**.
+The above introduced the basics of ggplot2 and how to use it to generate plots using layers. There are additional packages that can be helpful to polish and use the ggplot2 objects you have created. Here we will look at `patchwork`, above I used `Rcolourbrewer`, and others include `ggpubr`, `ggnetwork`, and `ggmap`.
 
-**Patchwork** is really useful if you want to work with the composition of your plots, and especially if you are looking to combine multiple plots, or other objects, in one figure. 
+`Patchwork` is really useful if you want to work with the composition of your plots, and especially if you are looking to combine multiple plots, or other objects, in one figure. 
 
 ```{r patchwork, message=FALSE, warning=FALSE}
 library(patchwork)
@@ -522,7 +540,7 @@ ggsave(combo1, file = "combo.png", dpi = 700, width=12.35, height=5.78)
 ```
 
 ## Shiny Apps
-And then finally, I wanted to point you to the **shiny** package available with R, which provides a web application framework. I am just starting to explore this, but we can go to the shiny app gallery to see how **shiny** can be used with ggplot2 to allow people to adjust input data and have compelling visuals returned.
+And then finally, I wanted to point you to the `shiny` package available with R, which provides a web application framework. I am just starting to explore this, but we can go to the shiny app gallery to see how `shiny` can be used with ggplot2 to allow people to adjust input data and have compelling visuals returned.
 
 https://shiny.rstudio.com/gallery/soil-profiles.html
 
@@ -546,6 +564,9 @@ https://ggplot2.tidyverse.org/reference/
 https://codewords.recurse.com/issues/six/telling-stories-with-data-using-the-grammar-of-graphics
 
 #### Citations
+
+Jeanette Clark, Rachel Donkersloot, Courtney Carothers, and Jessica Black. Sample indicators of well-being in Alaska. Knowledge Network for Biocomplexity. doi:10.5063/F1XK8CVG.
+
 ```{r citations, warning=FALSE, message=FALSE, echo=FALSE}
 citation("ggplot2")
 citation("dplyr")
@@ -556,5 +577,3 @@ citation("magick")
 citation("RColorBrewer")
 citation("shiny")
 ```
-
-Jeanette Clark, Rachel Donkersloot, Courtney Carothers, and Jessica Black. Sample indicators of well-being in Alaska. Knowledge Network for Biocomplexity. doi:10.5063/F1XK8CVG.

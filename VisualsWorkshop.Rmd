@@ -466,6 +466,8 @@ plot34<- ggplot(wellbeing.ak, aes(x=lat, y=subs_lbs_per_capita_harvest)) +
 plot34
 
 ```
+
+
 ## GGSave
 A nice part about RStudio is that you can see the plots and get a sense of what they look like. However, it is important to know that they are just temporary, once you close your session they will no longer be available to you, unless you save them. You can save ggplot items as .pdf, .png, .jpg and other formats using `ggsave`. 
 

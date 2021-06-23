@@ -24,7 +24,7 @@ This is probably the biggest selling point of R for me. Of the different program
 Another stength is that you can work with and clean your data, run statistical tests and models, and generate very compelling and customizable plots all in one place. And you have a record or "audit trail" of all of that. 
 
 #### Lots of support
-R is very popular and there is a lot of support online, both in the form of packages and documentation and in places like StachOverflow where people help address questions and problems people are facing.
+R is very popular and there is a lot of support online, both in the form of packages and documentation and in places like StackOverflow where people help address questions and problems people are facing.
 
 ## Why can it be really frustrating?
 

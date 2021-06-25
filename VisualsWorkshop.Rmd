@@ -143,7 +143,7 @@ At this point, we can see that we have the variables on the correct axises and t
 The next step is to decide how we want to visualise the data and let ggplot know so that it can project the data onto the coordinates we just set up.
 
 ### Geom
-We accomplish this through the **geom** layer. There are many geoms available for using with `ggplot2`, each comes with its own preset functionalities and it takes some consideration of the type of data you are working with: is it continuous? categorical? and the relationships you are interested in exploring. 
+We accomplish this through the **geom** layer. There are many geoms available for using with `ggplot2`, each comes with its own preset functionalities and it takes some consideration of the type of data you are working with: is it continuous? categorical? and the relationships you are interested in exploring. This site provides a tool to help you walk through what vistuals might be a good fit with your data and story: https://www.data-to-viz.com/#explore.
 
 A handy spot to gain familiarity with the range of geoms available is: https://ggplot2.tidyverse.org/reference/#section-layer-geoms.
 
